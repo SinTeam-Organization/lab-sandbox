@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Build all the code
         run: echo "building application package"
@@ -49,12 +49,18 @@ jobs:
     steps:
       - name: Performance Test
         run: echo "Executing test"
+      - name: Retrieve environment secret
+        run: echo "The secret value is ${{ secrets.USERPASS }}"
+        
 
   prod:
     needs: [ dev, perf ]
     runs-on: ubuntu-latest
     environment: mona-prod
     steps:
+      - name: Retrieve environment secret
+        run: echo "The secret value is ${{ secrets.USERPASS }}"
+
       - name: Download build artifacts
         run: echo "Download artifacts"
 
