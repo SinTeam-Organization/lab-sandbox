@@ -23,7 +23,7 @@ jobs:
           path: .
           retention-days: 1 # optional
 
-  test:
+  dev:
     needs: build
     strategy:
       matrix:
@@ -42,8 +42,16 @@ jobs:
       - name: Running Test on ${{ matrix.environment }}
         run: echo "Execute test on ${{ matrix.environment }}"
 
+  perf:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: mona-perf
+    steps:
+      - name: Performance Test
+        run: echo "Executing test"
+
   prod:
-    needs: test
+    needs: [ dev, perf ]
     runs-on: ubuntu-latest
     environment: mona-prod
     steps:
