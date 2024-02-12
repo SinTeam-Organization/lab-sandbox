@@ -1,21 +1,17 @@
 name: Mona's pipeline
+run-name: ${{ github.actor }} testing actions
 
 on:
   push:
     branches:
       - mona/*
 
-env:
-  DEV: mona-dev
-  TEST: mona-test
-  PROD: mona-prod
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Build all the code
         run: echo "building application package"
@@ -27,13 +23,12 @@ jobs:
           path: .
           retention-days: 1 # optional
 
-
-  test:
+  dev:
     needs: build
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        environment: [${{ env.DEV }}, ${{ env.TEST }}]
+        environment: [ mona-dev, mona-test ]
+    runs-on: ubuntu-latest
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -47,17 +42,30 @@ jobs:
       - name: Running Test on ${{ matrix.environment }}
         run: echo "Execute test on ${{ matrix.environment }}"
 
-  prod:
-    needs: test
+  perf:
+    needs: build
     runs-on: ubuntu-latest
-    environment:
-      name: [${{ env.PROD }}]
+    environment: mona-perf
     steps:
+      - name: Performance Test
+        run: echo "Executing test"
+      - name: Retrieve environment secret
+        run: echo "The secret value is ${{ secrets.USERPASS }}"
+        
+
+  prod:
+    needs: [ dev, perf ]
+    runs-on: ubuntu-latest
+    environment: mona-prod
+    steps:
+      - name: Retrieve environment secret
+        run: echo "The secret value is ${{ secrets.USERPASS }}"
+
       - name: Download build artifacts
-        run: echo "Download to ${{ environment }}"
+        run: echo "Download artifacts"
 
-      - name: Deploy to ${{ environment }}
-        run: echo "Deploying to ${{ environment }}"
+      - name: Deploy to prod
+        run: echo "Deploying to "
 
-      - name: Smoke Test on ${{ environment }}
-        run: echo "Smoking ${{ environment }}"
+      - name: Smoke Test on prod
+        run: echo "Smoking prod"
