@@ -3,9 +3,10 @@ run-name: ${{ github.actor }} running lab
 
 on:
   push:
-    branches:
-      - main
-
+    branches: [ main ]
+  pull_request:
+    types: [ opened, edited, reopened, review_requested ]
+    branches: [ main ]
 jobs:
   build:
     runs-on: ubuntu-latest
