@@ -1,0 +1,20 @@
+name: Lab CI pipeline
+run-name: ${{ github.actor }} running lab
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build all the code
+        run: echo "building application package"
+      - name: Run some test
+        run: echo "Testing application package"
+      - name: All done
+        run: |
+          echo "All done"
+          echo "really"
